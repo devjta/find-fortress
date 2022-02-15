@@ -10,7 +10,7 @@
 // requirements: must be a nether fortress
 // surrounding 256x256 area (in blocks) must be the soul sand valley biome
 
-#include "finders.h"
+#include "cubiomes/finders.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h> 
@@ -86,7 +86,7 @@ int init()
 		return 0;
 	}
 	srand((unsigned)time(NULL));
-	settings.mc = MC_1_17;
+	settings.mc = MC_1_18;
 	settings.range = 10000;
 	settings.area = 256;
 	settings.seed = (((uint64_t)rand()) << 32) + ((uint64_t)rand());
@@ -198,18 +198,15 @@ int main()
 			}
 			else
 			{
-				if (isViableNetherStructurePos(Fortress, settings.mc, &settings.nn, settings.seed, p.x, p.z))
+				// 
+				// biome area check
+				//
+				if (soul_sand_valley_check(&settings.nn, settings.sha, p, settings.area) > 0)
 				{
-					// 
-					// biome area check
-					//
-					if (soul_sand_valley_check(&settings.nn, settings.sha, p, settings.area) > 0)
-					{
-						float hypot = distance(p);
-						printf("suitable fortress at (%d, %d) -> %.0f blocks away from 0, 0\n", p.x, p.z, hypot);
-						fprintf(settings.fp, "(%d, %d) d = %.0f\n", p.x, p.z, hypot);
-						n++;
-					}
+					float hypot = distance(p);
+					printf("suitable fortress at (%d, %d) -> %.0f blocks away from 0, 0\n", p.x, p.z, hypot);
+					fprintf(settings.fp, "(%d, %d) d = %.0f\n", p.x, p.z, hypot);
+					n++;
 				}
 			}
 		}

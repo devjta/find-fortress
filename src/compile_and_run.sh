@@ -1,6 +1,8 @@
 #!/bin/bash
-# excuse my Linux scripting skills...
 
+cd cubiomes
 make libcubiomes
-gcc find_witherskeleton.c -o a.out libcubiomes.a -fwrapv -lm
+cp libcubiomes.a ..
+cd ..
+gcc find_witherskeleton.c -o a.out libcubiomes.a -fwrapv -lm -lpthread
 ./a.out
