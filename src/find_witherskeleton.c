@@ -12,6 +12,7 @@
 
 #include "cubiomes/finders.h"
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include <stdlib.h> 
 #include <time.h> 
@@ -36,6 +37,13 @@ float distance(Pos p)
 	return sqrt((p.x * p.x) + (p.z * p.z));
 }
 
+int isDigit(char c){
+	if(c >= '0' && c <= '0'){
+		return 0;
+	}
+	return 1;
+}
+
 // check if the char data is entirely numerical
 int numcheck(char *text)
 {
@@ -43,7 +51,7 @@ int numcheck(char *text)
     j = strlen(text);
     while(j--)
     {
-        if(isdigit(text[j]) || text[j] == '-')
+        if(isDigit(text[j]) || text[j] == '-')
             continue;
 
         return 0;
@@ -86,7 +94,7 @@ int init()
 		return 0;
 	}
 	srand((unsigned)time(NULL));
-	settings.mc = MC_1_18;
+	settings.mc = MC_1_19;
 	settings.range = 10000;
 	settings.area = 256;
 	settings.seed = (((uint64_t)rand()) << 32) + ((uint64_t)rand());
