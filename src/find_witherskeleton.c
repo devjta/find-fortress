@@ -39,10 +39,10 @@ float distance(Pos p)
 }
 
 int isDigit(char c){
-	if(c >= '0' && c <= '0'){
-		return 0;
+	if(c >= '0' && c <= '9'){
+		return 1;
 	}
-	return 1;
+	return 0;
 }
 
 // check if the char data is entirely numerical
