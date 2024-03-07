@@ -11,6 +11,7 @@
 // surrounding 256x256 area (in blocks) must be the soul sand valley biome
 
 #include "cubiomes/finders.h"
+#include "cubiomes/generator.h"
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -94,7 +95,7 @@ int init()
 		return 0;
 	}
 	srand((unsigned)time(NULL));
-	settings.mc = MC_1_19;
+	settings.mc = MC_1_20;
 	settings.range = 10000;
 	settings.area = 256;
 	settings.seed = (((uint64_t)rand()) << 32) + ((uint64_t)rand());
@@ -190,6 +191,10 @@ int main()
 	int regX, regZ;
 	int n = 0;
 	
+	Generator g;
+    setupGenerator(&g, settings.mc, 0);
+	applySeed(&g, DIM_NETHER, settings.seed);
+
 	printf("\nusing seed %" PRId64 ", range of %d blocks, area of %d*%d:\n\n", (uint64_t)settings.seed, settings.range, settings.area, settings.area);
 	fprintf(settings.fp, "seed: %" PRId64 ", range (in blocks): %d, area: %d*%d for MC version %d\n", (uint64_t)settings.seed, settings.range, settings.area, settings.area, settings.mc);
 	//
@@ -206,15 +211,18 @@ int main()
 			}
 			else
 			{
-				// 
-				// biome area check
-				//
-				if (soul_sand_valley_check(&settings.nn, settings.sha, p, settings.area) > 0)
+				if (isViableStructurePos(Fortress, &g, p.x, p.z, 0))
 				{
-					float hypot = distance(p);
-					printf("suitable fortress at (%d, %d) -> %.0f blocks away from 0, 0\n", p.x, p.z, hypot);
-					fprintf(settings.fp, "(%d, %d) d = %.0f\n", p.x, p.z, hypot);
-					n++;
+					// 
+					// biome area check
+					//
+					if (soul_sand_valley_check(&settings.nn, settings.sha, p, settings.area) > 0)
+					{
+						float hypot = distance(p);
+						printf("suitable fortress at (%d, %d) -> %.0f blocks away from 0, 0\n", p.x, p.z, hypot);
+						fprintf(settings.fp, "(%d, %d) d = %.0f\n", p.x, p.z, hypot);
+						n++;
+					}
 				}
 			}
 		}
