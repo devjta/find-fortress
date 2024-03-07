@@ -60,6 +60,30 @@ int numcheck(char *text)
     return 1;
 }
 
+// surrounding area must be a warped forest biome
+// lessen area to give a little lee-way if desired
+int warped_forest_check(const NetherNoise *nn, uint64_t sha, Pos p, int areaHalf)
+{
+	// half the area to parse a square around Pos p
+	areaHalf /= 2;
+	int cornerX, cornerY = 0, cornerZ;
+	int limitCornerX = p.x + areaHalf, limitCornerZ = p.z + areaHalf;
+	for (cornerX = p.x - areaHalf; cornerX <= limitCornerX; cornerX++)
+		for (cornerZ = p.z - areaHalf; cornerZ <= limitCornerZ; cornerZ++)
+		{
+			// convert 1:1 coordinates to 1:4 for nether biome access
+			// use y=0 as they are used for structure spawning
+			int scaledX = 0, scaledY = 0, scaledZ = 0;
+			voronoiAccess3D(sha, cornerX, cornerY, cornerZ, &scaledX, &scaledY, &scaledZ);
+			int biome = getNetherBiome(nn, scaledX, scaledY, scaledZ, NULL);
+			if (biome != warped_forest)
+			{
+				return 0;
+			}
+		}
+	return 1;
+}
+
 // surrounding area must be a soul sand valley biome
 // lessen area to give a little lee-way if desired
 int soul_sand_valley_check(const NetherNoise *nn, uint64_t sha, Pos p, int areaHalf)
@@ -219,11 +243,17 @@ int main()
 					if (soul_sand_valley_check(&settings.nn, settings.sha, p, settings.area) > 0)
 					{
 						float hypot = distance(p);
-						printf("suitable fortress at (%d, %d) -> %.0f blocks away from 0, 0\n", p.x, p.z, hypot);
+						printf("suitable fortress in SSV at (%d, %d) -> %.0f blocks away from 0, 0\n", p.x, p.z, hypot);
 						fprintf(settings.fp, "(%d, %d) d = %.0f\n", p.x, p.z, hypot);
 						n++;
 					}
-				}
+					if (warped_forest_check(&settings.nn, settings.sha, p, settings.area) > 0)
+					{
+						float hypot = distance(p);
+						printf("suitable fortress in WarpedForest at (%d, %d) -> %.0f blocks away from 0, 0\n", p.x, p.z, hypot);
+						fprintf(settings.fp, "(%d, %d) d = %.0f\n", p.x, p.z, hypot);
+						n++;
+					}				}
 			}
 		}
 	if (n <= 0)
